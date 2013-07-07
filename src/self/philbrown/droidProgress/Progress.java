@@ -30,7 +30,7 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 
 /**
- * Progress Bar/Spinner extension for droidQuery. Usage:
+ * Progress Spinner/Bar extension for <a href="https://github.com/phil-brown/droidQuery">droidQuery</a>. Usage:
  * <pre>
  * $.extend("progress", "self.philbrown.droidProgress.Progress");
  * final Progress progress = (Progress) $.with(this).ext("progress", new ProgressOptions().indeterminate(true));
@@ -49,7 +49,9 @@ import android.widget.RelativeLayout;
  */
 public class Progress extends $Extension 
 {
+	/** Provides a reference to the context and the view where the progress is shown. */
 	private $ droidQuery;
+	
 	/**
 	 * Progress Options
 	 */
@@ -73,6 +75,9 @@ public class Progress extends $Extension
 		this.droidQuery = droidQuery;
 	}
 
+	/**
+	 * Initiates the progress, and sets up its location in the layout.
+	 */
 	@Override
 	protected void invoke(Object... args) 
 	{
@@ -179,7 +184,7 @@ public class Progress extends $Extension
 	}
 	
 	/**
-	 * Update the progress indicator
+	 * Update the progress indicator (useful for determinate progress indicators)
 	 */
 	public void update(int progress)
 	{
