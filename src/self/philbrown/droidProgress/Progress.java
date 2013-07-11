@@ -83,87 +83,76 @@ public class Progress extends $Extension
 	{
 		//new Progress Instance
 		options = (ProgressOptions) args[0];
-		droidQuery.manage(new Function() {
-			@Override
-			public void invoke(Object... args) {
-				
-				
-				final Context context = (Context) args[0];
-				View view = (View) args[1];
-				
-				bar = new ProgressBar(context);
-				bar.setIndeterminate(options.indeterminate());
-				bar.setMax(options.max());
-				
-				progressContainer = new RelativeLayout(context);
-				progressContainer.setBackgroundColor(Color.parseColor("#999999"));
-				progressContainer.setAlpha(0.2f);
-				progressContainer.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-				RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
-				params.addRule(RelativeLayout.CENTER_IN_PARENT);
-				bar.setLayoutParams(params);
-				progressContainer.addView(bar);
-				
-				if (view instanceof ViewGroup)
+		Context context = droidQuery.context();
+		
+		bar = new ProgressBar(context);
+		bar.setIndeterminate(options.indeterminate());
+		bar.setMax(options.max());
+		
+		progressContainer = new RelativeLayout(context);
+		progressContainer.setBackgroundColor(Color.parseColor("#999999"));
+		progressContainer.setAlpha(0.2f);
+		progressContainer.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+		RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+		params.addRule(RelativeLayout.CENTER_IN_PARENT);
+		bar.setLayoutParams(params);
+		progressContainer.addView(bar);
+		
+		if (droidQuery.length() == 1 && droidQuery.view(0) instanceof ViewGroup)
+		{
+			//add as subview
+			((ViewGroup) droidQuery.view(0)).addView(progressContainer);
+		}
+		else
+		{
+			//add over top of view
+			
+			if (droidQuery.view(0).getParent() != null && droidQuery.view(0).getParent() instanceof ViewGroup)
+			{
+				Point position = droidQuery.position();
+				int width = droidQuery.width();
+				int height = droidQuery.height();
+				progressContainer.setLayoutParams(new ViewGroup.LayoutParams(width, height));
+				((ViewGroup) droidQuery.view(0).getParent()).addView(progressContainer);
+				progressContainer.setX(position.x);
+				progressContainer.setY(position.y);
+				progressContainer.setVisibility(View.GONE);
+			}
+			else
+			{
+				//if that fails, just show over the whole screen.
+				final Point offset = droidQuery.offset();
+				final int width = droidQuery.width();
+				final int height = droidQuery.height();
+				try
 				{
-					//add as subview
-					((ViewGroup) view).addView(progressContainer);
-				}
-				else
-				{
-					//add over top of view
+					View v = $.with(context).id(android.R.id.content).view(0);
+					ViewGroup root = (ViewGroup) v.getRootView();
+					int adjustedWidth = width;
+					WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+					Display display = wm.getDefaultDisplay();
+					if (width == 0)
+					{
+						adjustedWidth = display.getWidth();
+					}
+					int adjustedHeight = height;
+					if (height == 0)
+					{
+						adjustedHeight = display.getHeight();
+					}
+					progressContainer.setLayoutParams(new ViewGroup.LayoutParams(adjustedWidth, adjustedHeight));
+					root.addView(progressContainer);
+					progressContainer.setX(offset.x);
+					progressContainer.setY(offset.y);
+					progressContainer.setVisibility(View.GONE);
 					
-					if (view.getParent() != null && view.getParent() instanceof ViewGroup)
-					{
-						Point position = droidQuery.position();
-						int width = droidQuery.width();
-						int height = droidQuery.height();
-						progressContainer.setLayoutParams(new ViewGroup.LayoutParams(width, height));
-						((ViewGroup) view.getParent()).addView(progressContainer);
-						progressContainer.setX(position.x);
-						progressContainer.setY(position.y);
-					}
-					else
-					{
-						//if that fails, just show over the whole screen.
-						final Point offset = droidQuery.offset();
-						final int width = droidQuery.width();
-						final int height = droidQuery.height();
-						try
-						{
-							$.with(context).id(android.R.id.content).manage(new Function(){
-								public void invoke(Object... args)
-								{
-									View v = (View) args[1];
-									ViewGroup root = (ViewGroup) v.getRootView();
-									int adjustedWidth = width;
-									WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
-									Display display = wm.getDefaultDisplay();
-									if (width == 0)
-									{
-										adjustedWidth = display.getWidth();
-									}
-									int adjustedHeight = height;
-									if (height == 0)
-									{
-										adjustedHeight = display.getHeight();
-									}
-									progressContainer.setLayoutParams(new ViewGroup.LayoutParams(adjustedWidth, adjustedHeight));
-									root.addView(progressContainer);
-									progressContainer.setX(offset.x);
-									progressContainer.setY(offset.y);
-									progressContainer.setVisibility(View.GONE);
-								}
-							});
-						}
-						catch (Throwable t)
-						{
-							//could not add progress element
-						}
-					}
+				}
+				catch (Throwable t)
+				{
+					//could not add progress element
 				}
 			}
-		});
+		}
 		
 	}
 	
