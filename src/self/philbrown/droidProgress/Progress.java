@@ -18,7 +18,6 @@ package self.philbrown.droidProgress;
 
 import self.philbrown.droidQuery.$;
 import self.philbrown.droidQuery.$Extension;
-import self.philbrown.droidQuery.Function;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Point;
