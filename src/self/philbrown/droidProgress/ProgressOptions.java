@@ -109,9 +109,9 @@ public class ProgressOptions
 	 * @param map the Options Map
 	 * @see self.philbrown.droidQuery.QuickMap
 	 */
-	public ProgressOptions(Map<String, Object> map)
+	public ProgressOptions(Map<String, ?> map)
 	{
-		for (Entry<String, Object> entry : map.entrySet())
+		for (Entry<String, ?> entry : map.entrySet())
 		{
 			if (entry.getKey().equalsIgnoreCase("indeterminate"))
 			{
